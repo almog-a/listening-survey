@@ -1,0 +1,55 @@
+{
+ "study": "notagen_part1",
+ "experiment": "exp1_proto",
+ "built": "2026-09-25T19:36:44",
+ "title": "Jazz listening study (prototype)",
+ "question": "Which of the two solos is the real performance by a jazz musician?",
+ "instructions_html": "<h2>The task</h2>\n<p>In every pair, <b>one solo was played by a professional jazz musician</b> (transcribed from the recording) and\n<b>the other was produced by a computer model</b> improvising over the same chord changes. Both are played back by\nthe same synthesised instrument (saxophone or trumpet, matching the original recording) with the same rhythm section, so the sound quality tells you nothing: listen to\n<b>what is played</b>, not how it sounds.</p>\n<p>Listen to both solos to the end (you may replay or scrub), then click the one you believe is the real\nperformance, and say how sure you are. There is no time limit. Please do not use other tools or people to help.</p>\n<p>The two solos in a pair are always over the same tune, and the pairs are unrelated to each other.</p>",
+ "n_bars": 16,
+ "items": [
+  {
+   "id": "proto_001",
+   "tune": "doodlin",
+   "A": {
+    "audio": "media/exp1/proto_001_A.mp3",
+    "video": "media/exp1/proto_001_A.mp4"
+   },
+   "B": {
+    "audio": "media/exp1/proto_001_B.mp3",
+    "video": "media/exp1/proto_001_B.mp4"
+   }
+  },
+  {
+   "id": "proto_002",
+   "tune": "doodlin",
+   "A": {
+    "audio": "media/exp1/proto_002_A.mp3",
+    "video": "media/exp1/proto_002_A.mp4"
+   },
+   "B": {
+    "audio": "media/exp1/proto_002_B.mp3",
+    "video": "media/exp1/proto_002_B.mp4"
+   }
+  },
+  {
+   "id": "proto_003",
+   "tune": "lady_bird",
+   "A": {
+    "audio": "media/exp1/proto_003_A.mp3",
+    "video": "media/exp1/proto_003_A.mp4"
+   },
+   "B": {
+    "audio": "media/exp1/proto_003_B.mp3",
+    "video": "media/exp1/proto_003_B.mp4"
+   }
+  }
+ ],
+ "sessions": {
+  "s1": [
+   "proto_001",
+   "proto_002",
+   "proto_003"
+  ]
+ },
+ "default_session": "s1"
+}

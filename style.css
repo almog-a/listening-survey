@@ -1,0 +1,25 @@
+:root { --fg: #1c1c1c; --muted: #666; --accent: #1f5fbf; --bg: #fafafa; --card: #fff; --border: #ddd; }
+body { background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.jspsych-display-element { font-size: 17px; line-height: 1.45; }
+.jspsych-content { max-width: 980px; }
+.pair { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin: 12px 0 8px; }
+.clip { flex: 1 1 420px; max-width: 470px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px 14px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.clip h3 { margin: 0 0 8px; font-size: 1.05em; }
+.clip video, .clip audio { width: 100%; display: block; background: #000; border-radius: 6px; }
+.clip audio { background: transparent; }
+.clip img { width: 100%; display: block; border-radius: 6px; border: 1px solid var(--border); }
+.clip .status { font-size: .85em; color: var(--muted); margin-top: 6px; min-height: 1.2em; }
+.clip.done .status { color: #1b7f3b; }
+.question { font-size: 1.15em; margin: 6px 0 4px; }
+.hint { color: var(--muted); font-size: .9em; }
+.jspsych-btn { font-size: 16px; padding: 10px 22px; margin: 6px; }
+.jspsych-btn:disabled { opacity: .45; cursor: not-allowed; }
+.progress { color: var(--muted); font-size: .85em; text-align: right; }
+.consent, .instructions { text-align: left; max-width: 760px; margin: 0 auto; }
+.consent h2, .instructions h2 { margin-top: 0; }
+form.qform { text-align: left; max-width: 640px; margin: 0 auto; }
+form.qform label { display: block; margin: 12px 0 4px; font-weight: 600; }
+form.qform select, form.qform input[type=text], form.qform input[type=number], form.qform textarea { width: 100%; padding: 6px 8px; font-size: 16px; box-sizing: border-box; }
+form.qform .radio label { font-weight: normal; display: inline-block; margin: 2px 12px 2px 0; }
+.code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.3em; background: #eef; padding: 6px 12px; border-radius: 6px; display: inline-block; }
+.error { color: #b00020; }
