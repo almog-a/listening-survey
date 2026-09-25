@@ -116,6 +116,15 @@
       preamble: "<h2>About you</h2><p class='hint'>Two minutes. This is used only to describe the group of listeners.</p>",
       html: questionnaireHtml(),
       button_label: "Continue",
+      on_load: function () {
+        if (!CFG.questionnaireSkippable) return;
+        const next = document.querySelector("#jspsych-survey-html-form-next");
+        if (!next) return;
+        const skip = document.createElement("button");
+        skip.type = "button"; skip.className = "jspsych-btn"; skip.textContent = "Skip for now"; skip.style.marginLeft = "12px";
+        skip.addEventListener("click", function () { jsPsych.finishTrial({ response: { skipped: true }, rt: null }); });
+        next.parentNode.insertBefore(skip, next.nextSibling);
+      },
       on_finish: function (d) { send({ kind: "questionnaire", experiment: M.experiment, session: sessionId, answers: JSON.stringify(d.response) }); },
     });
     // preload

@@ -7,6 +7,8 @@ window.SURVEY_CONFIG = {
   manifestUrl: "manifest.json",
   // Require both excerpts to be played to the end before the choice buttons are enabled.
   requireFullListen: false,
+  // Show a "Skip for now" button on the About-you page (pilot only; set false for the real study).
+  questionnaireSkippable: true,
   // Ask for a confidence rating after each choice.
   askConfidence: false,
   // Contact shown on the consent page.
