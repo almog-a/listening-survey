@@ -46,7 +46,7 @@
   }
   function send(row) {
     row.rater = raterId; row.client_time = new Date().toISOString();
-    row.uid = raterId + ":" + row.kind + ":" + (row.item_id || row.session || "") + ":" + (row.part || "");
+    row.uid = raterId + ":" + row.kind + ":" + (row.item_id || row.session || "") + ":" + (row.part || "") + ":" + (row.rev || "");
     queue.push(row); lsSet(queueKey, queue);
     flush();
   }
@@ -77,8 +77,9 @@
     const allowed = M.sessions && M.sessions[sessionId] ? new Set(M.sessions[sessionId]) : null;
     if (M.sessions && !allowed) { fatal("Unknown session '" + sessionId + "'."); return; }
     const rnd = mulberry32(hash32(M.experiment + "|" + sessionId + "|" + raterId));
-    const doneKey = "ls_done_" + M.experiment + "_" + sessionId + "_" + raterId;
-    const done = new Set(lsGet(doneKey, []));
+    function navKey() { return "ls_nav_" + M.experiment + "_" + sessionId + "_" + raterId; }
+    const saved = lsGet(navKey(), { step: 0, answers: {} });
+    const done = new Set(Object.keys(saved.answers || {}));
 
     // per-rater plan: parts in manifest order, items shuffled within a part, pair sides flipped for half of them
     const plan = [];
@@ -133,64 +134,22 @@
       show_clickable_nav: true, button_label_next: "Begin", allow_backward: false,
     });
 
-    // parts
+    // parts: a navigator with Back / Next (jsPsych timelines are forward-only), run as one async trial
+    const steps = [];
+    let nPos = 0;
     plan.forEach(function (p, pi) {
-      const part = p.part;
-      const remaining = p.trials.filter(function (t) { return !done.has(t.item.id); });
-      if (!remaining.length) { pos += p.trials.length; return; }
-      timeline.push({
-        type: jsPsychInstructions,
-        pages: ['<div class="instructions"><p class="hint">Part ' + (pi + 1) + ' of ' + plan.length + '</p><h2>' + esc(part.title) + '</h2>' + (part.intro_html || "") + '<p class="hint">' + remaining.length + ' questions.</p></div>'],
-        show_clickable_nav: true, button_label_next: "Start part", allow_backward: false,
-      });
-      remaining.forEach(function (t) {
-        const it = t.item;
-        const slots = t.flipped ? ["B", "A"] : ["A", "B"];
-        const myPos = pos++;
-        const isSideChoice = part.layout === "pair" && part.choices.length === 2 && /^solo 1$/i.test(part.choices[0]);
-        timeline.push({
-          type: jsPsychHtmlButtonResponse,
-          stimulus: trialHtml(part, it, slots, myPos, nTotal),
-          choices: part.choices,
-          prompt: '<p class="hint">' + (CFG.requireFullListen ? "Listen to the music to the end, then answer." : "You may replay the music as often as you like.") + '</p>',
-          on_load: function () {
-            const els = Array.prototype.slice.call(document.querySelectorAll(".clip video, .clip audio"));
-            const btns = Array.prototype.slice.call(document.querySelectorAll("#jspsych-html-button-response-btngroup button"));
-            const ended = els.map(function () { return false; }), plays = els.map(function () { return 0; }), events = [];
-            const tStart = performance.now();
-            function ev(name, i, el) { events.push([Math.round(performance.now() - tStart), name, i, +el.currentTime.toFixed(2)]); }
-            if (CFG.requireFullListen) btns.forEach(function (b) { b.disabled = true; });
-            els.forEach(function (el, i) {
-              el.addEventListener("play", function () { plays[i]++; ev("play", i, el); els.forEach(function (o, j) { if (j !== i && !o.paused) o.pause(); }); });
-              el.addEventListener("pause", function () { ev("pause", i, el); });
-              el.addEventListener("seeked", function () { ev("seek", i, el); });
-              el.addEventListener("ended", function () {
-                ended[i] = true; ev("ended", i, el);
-                if (ended.every(Boolean)) btns.forEach(function (b) { b.disabled = false; });
-              });
-            });
-            window.__trialStats = function () { return { plays: plays.slice(), events: events, listened_all: ended.every(Boolean) }; };
-          },
-          on_finish: function (d) {
-            const st = window.__trialStats ? window.__trialStats() : {};
-            d.item_id = it.id; d.part = part.id; d.choice_label = part.choices[d.response];
-            const row = { kind: "trial", experiment: M.experiment, session: sessionId, part: part.id, item_id: it.id, tune: it.tune || "", layout: part.layout,
-              trial_index: myPos, choice_index: d.response, choice_label: d.choice_label, rt_ms: Math.round(d.rt),
-              plays: JSON.stringify(st.plays || []), listened_all: !!st.listened_all, events: JSON.stringify(st.events || []) };
-            if (part.layout === "pair") { row.slot1_side = slots[0]; row.slot2_side = slots[1]; row.chosen_side = isSideChoice ? slots[d.response] : ""; }
-            send(row);
-            done.add(it.id); lsSet(doneKey, Array.from(done));
-            jsPsych.progressBar.progress = done.size / nTotal;
-          },
-        });
-      });
+      steps.push({ type: "intro", part: p.part, index: pi });
+      p.trials.forEach(function (t) { steps.push({ type: "trial", part: p.part, item: t.item, slots: t.flipped ? ["B", "A"] : ["A", "B"], pos: nPos++ }); });
     });
+    const nav = lsGet(navKey(), { step: 0, answers: {} });
+    if (nav.step >= steps.length) nav.step = 0;
+    timeline.push({ type: jsPsychCallFunction, async: true, func: function (cb) { runNavigator(M, sessionId, steps, nav, navKey(), nTotal, plan.length, cb); } });
 
     // end
     timeline.push({
       type: jsPsychCallFunction, async: true,
       func: async function (cb) {
-        send({ kind: "session_end", experiment: M.experiment, session: sessionId, n_done: done.size, n_items: nTotal, duration_s: Math.round((Date.now() - t0) / 1000), send_failures: sendFailures });
+        send({ kind: "session_end", experiment: M.experiment, session: sessionId, n_done: Object.keys(lsGet(navKey(), { answers: {} }).answers).length, n_items: nTotal, duration_s: Math.round((Date.now() - t0) / 1000), send_failures: sendFailures });
         for (let i = 0; i < 5 && queue.length; i++) { await flush(); if (queue.length) await new Promise(function (r) { setTimeout(r, 1500); }); }
         cb();
       },
@@ -216,6 +175,70 @@
 
     jsPsych.data.addProperties({ rater: raterId, experiment: M.experiment, session: sessionId });
     jsPsych.run(timeline);
+  }
+
+
+  // ---------- navigator (Back / Next over intro pages and questions) ----------
+  function runNavigator(M, sessionId, steps, nav, key, nTotal, nParts, cb) {
+    const root = jsPsych.getDisplayElement();
+    let shownAt = 0, stats = null;
+    function save() { lsSet(key, nav); }
+    function progress() { jsPsych.progressBar.progress = Object.keys(nav.answers).length / nTotal; }
+    function go(i) {
+      nav.step = Math.max(0, Math.min(i, steps.length)); save();
+      if (nav.step >= steps.length) { root.innerHTML = ""; cb(); return; }
+      render();
+    }
+    function record(st, i) {
+      const prev = nav.answers[st.item.id];
+      const rev = prev ? (prev.rev || 1) + 1 : 1;
+      const s = stats ? stats() : {};
+      nav.answers[st.item.id] = { choice_index: i, rev: rev }; save(); progress();
+      const part = st.part, slots = st.slots;
+      const isSideChoice = part.layout === "pair" && part.choices.length === 2 && /^solo 1$/i.test(part.choices[0]);
+      const row = { kind: "trial", experiment: M.experiment, session: sessionId, part: part.id, item_id: st.item.id, tune: st.item.tune || "", layout: part.layout,
+        trial_index: st.pos, choice_index: i, choice_label: part.choices[i], rev: rev, rt_ms: Math.round(performance.now() - shownAt),
+        plays: JSON.stringify(s.plays || []), listened_all: !!s.listened_all, events: JSON.stringify(s.events || []) };
+      if (part.layout === "pair") { row.slot1_side = slots[0]; row.slot2_side = slots[1]; row.chosen_side = isSideChoice ? slots[i] : ""; }
+      send(row);
+    }
+    function render() {
+      const st = steps[nav.step];
+      const last = nav.step === steps.length - 1;
+      let html = '<div class="nav-screen">', canNext, nextLabel;
+      if (st.type === "intro") {
+        html += '<div class="instructions"><p class="hint">Part ' + (st.index + 1) + ' of ' + nParts + '</p><h2>' + esc(st.part.title) + '</h2>' + (st.part.intro_html || "") + '<p class="hint">' + st.part.items.length + ' questions.</p></div>';
+        canNext = true; nextLabel = "Start part";
+      } else {
+        const ans = nav.answers[st.item.id];
+        html += trialHtml(st.part, st.item, st.slots, st.pos, nTotal);
+        html += '<div class="choices">' + st.part.choices.map(function (c, i) { return '<button class="jspsych-btn choice' + (ans && ans.choice_index === i ? ' selected' : '') + '" data-i="' + i + '">' + esc(c) + '</button>'; }).join("") + '</div>';
+        html += '<p class="hint">You may replay the music as often as you like. Choosing an answer moves on; you can come back and change it.</p>';
+        canNext = !!ans; nextLabel = last ? "Finish" : "Next";
+      }
+      html += '<div class="navbar"><button class="jspsych-btn nav" id="nav-back"' + (nav.step === 0 ? ' disabled' : '') + '>&#8592; Back</button>' +
+        '<button class="jspsych-btn nav" id="nav-next"' + (canNext ? '' : ' disabled') + '>' + nextLabel + ' &#8594;</button></div></div>';
+      root.innerHTML = html;
+      shownAt = performance.now();
+      // media bookkeeping
+      const els = Array.prototype.slice.call(root.querySelectorAll(".clip video, .clip audio"));
+      const ended = els.map(function () { return false; }), plays = els.map(function () { return 0; }), events = [];
+      function ev(name, i, el) { events.push([Math.round(performance.now() - shownAt), name, i, +el.currentTime.toFixed(2)]); }
+      els.forEach(function (el, i) {
+        el.addEventListener("play", function () { plays[i]++; ev("play", i, el); els.forEach(function (o, j) { if (j !== i && !o.paused) o.pause(); }); });
+        el.addEventListener("pause", function () { ev("pause", i, el); });
+        el.addEventListener("seeked", function () { ev("seek", i, el); });
+        el.addEventListener("ended", function () { ended[i] = true; ev("ended", i, el); });
+      });
+      stats = function () { return { plays: plays.slice(), events: events, listened_all: ended.every(Boolean) }; };
+      // buttons
+      root.querySelectorAll("button.choice").forEach(function (b) { b.addEventListener("click", function () { record(st, +b.getAttribute("data-i")); go(nav.step + 1); }); });
+      root.querySelector("#nav-back").addEventListener("click", function () { go(nav.step - 1); });
+      root.querySelector("#nav-next").addEventListener("click", function () { go(nav.step + 1); });
+      window.scrollTo(0, 0);
+    }
+    progress();
+    render();
   }
 
   // ---------- HTML pieces ----------

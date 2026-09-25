@@ -28,3 +28,8 @@ form.qform .radio label { font-weight: normal; display: inline-block; margin: 2p
 .leadsheet img { width: 100%; display: block; border-radius: 6px; }
 .leadsheet audio { width: 100%; margin-top: 6px; }
 .pair.single .clip { max-width: 600px; }
+.nav-screen { max-width: 980px; margin: 0 auto; }
+.choices { margin: 10px 0 4px; }
+.choices .choice.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+.navbar { display: flex; justify-content: space-between; max-width: 980px; margin: 18px auto 0; border-top: 1px solid var(--border); padding-top: 12px; }
+.navbar .nav { min-width: 130px; }
