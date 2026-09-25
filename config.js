@@ -6,9 +6,9 @@ window.SURVEY_CONFIG = {
   // manifest.json written by build_items_*.py; describes the experiment, items and sessions.
   manifestUrl: "manifest.json",
   // Require both excerpts to be played to the end before the choice buttons are enabled.
-  requireFullListen: true,
+  requireFullListen: false,
   // Ask for a confidence rating after each choice.
-  askConfidence: true,
+  askConfidence: false,
   // Contact shown on the consent page.
   contact: "almog.alg@gmail.com",
 };

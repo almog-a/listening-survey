@@ -23,3 +23,8 @@ form.qform select, form.qform input[type=text], form.qform input[type=number], f
 form.qform .radio label { font-weight: normal; display: inline-block; margin: 2px 12px 2px 0; }
 .code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.3em; background: #eef; padding: 6px 12px; border-radius: 6px; display: inline-block; }
 .error { color: #b00020; }
+.leadsheet { max-width: 900px; margin: 4px auto 10px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+.leadsheet h3 { margin: 0 0 6px; font-size: 1em; color: var(--muted); }
+.leadsheet img { width: 100%; display: block; border-radius: 6px; }
+.leadsheet audio { width: 100%; margin-top: 6px; }
+.pair.single .clip { max-width: 600px; }

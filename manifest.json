@@ -1,55 +1,309 @@
 {
  "study": "notagen_part1",
- "experiment": "exp1_proto",
- "built": "2026-09-25T19:36:44",
- "title": "Jazz listening study (prototype)",
- "question": "Which of the two solos is the real performance by a jazz musician?",
- "instructions_html": "<h2>The task</h2>\n<p>In every pair, <b>one solo was played by a professional jazz musician</b> (transcribed from the recording) and\n<b>the other was produced by a computer model</b> improvising over the same chord changes. Both are played back by\nthe same synthesised instrument (saxophone or trumpet, matching the original recording) with the same rhythm section, so the sound quality tells you nothing: listen to\n<b>what is played</b>, not how it sounds.</p>\n<p>Listen to both solos to the end (you may replay or scrub), then click the one you believe is the real\nperformance, and say how sure you are. There is no time limit. Please do not use other tools or people to help.</p>\n<p>The two solos in a pair are always over the same tune, and the pairs are unrelated to each other.</p>",
- "n_bars": 16,
- "items": [
+ "experiment": "template",
+ "built": "2026-09-25T20:27:59",
+ "title": "Jazz listening study (template)",
+ "instructions_html": "<h2>How it works</h2><p>The study has <b>4 short parts</b>. Each part starts with a page that explains its question. You may replay any clip as often as you like. There are no right or wrong consequences for you; answer by ear.</p>",
+ "parts": [
   {
-   "id": "proto_001",
-   "tune": "doodlin",
-   "A": {
-    "audio": "media/exp1/proto_001_A.mp3",
-    "video": "media/exp1/proto_001_A.mp4"
-   },
-   "B": {
-    "audio": "media/exp1/proto_001_B.mp3",
-    "video": "media/exp1/proto_001_B.mp4"
-   }
+   "id": "1a",
+   "title": "Which solo sounds more natural?",
+   "layout": "pair",
+   "choices": [
+    "Solo 1",
+    "Solo 2"
+   ],
+   "leadsheet": false,
+   "question": "Which of the two solos sounds more like a real jazz performance?",
+   "intro_html": "<p>You will hear two solo excerpts at a time, over the same tune. Choose the one that sounds more like a <b>real jazz musician improvising</b>. Both are played back by the same synthesised instrument and band, so judge <b>what is played</b>, not the sound.</p>",
+   "items": [
+    {
+     "id": "p1a_01",
+     "tune": "doodlin",
+     "A": {
+      "audio": "media/clips/c001.mp3",
+      "video": "media/clips/c001.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c002.mp3",
+      "video": "media/clips/c002.mp4"
+     }
+    },
+    {
+     "id": "p1a_02",
+     "tune": "lady_bird",
+     "A": {
+      "audio": "media/clips/c003.mp3",
+      "video": "media/clips/c003.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c004.mp3",
+      "video": "media/clips/c004.mp4"
+     }
+    },
+    {
+     "id": "p1a_03",
+     "tune": "doodlin",
+     "A": {
+      "audio": "media/clips/c005.mp3",
+      "video": "media/clips/c005.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c006.mp3",
+      "video": "media/clips/c006.mp4"
+     }
+    },
+    {
+     "id": "p1a_04",
+     "tune": "lady_bird",
+     "A": {
+      "audio": "media/clips/c007.mp3",
+      "video": "media/clips/c007.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c008.mp3",
+      "video": "media/clips/c008.mp4"
+     }
+    }
+   ]
   },
   {
-   "id": "proto_002",
-   "tune": "doodlin",
-   "A": {
-    "audio": "media/exp1/proto_002_A.mp3",
-    "video": "media/exp1/proto_002_A.mp4"
-   },
-   "B": {
-    "audio": "media/exp1/proto_002_B.mp3",
-    "video": "media/exp1/proto_002_B.mp4"
-   }
+   "id": "1b",
+   "title": "Which solo sounds more natural? (with the lead sheet)",
+   "layout": "pair",
+   "choices": [
+    "Solo 1",
+    "Solo 2"
+   ],
+   "leadsheet": true,
+   "question": "Given the lead sheet, which solo sounds more like a real jazz performance over it?",
+   "intro_html": "<p>Same task as before, but now you also see the <b>lead sheet</b> (melody and chord changes) the solos were played over. Use it as you like: how the solo relates to the changes and the form may help you decide.</p>",
+   "items": [
+    {
+     "id": "p1b_01",
+     "tune": "lady_bird",
+     "A": {
+      "audio": "media/clips/c009.mp3",
+      "video": "media/clips/c009.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c010.mp3",
+      "video": "media/clips/c010.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/lady_bird.png"
+     }
+    },
+    {
+     "id": "p1b_02",
+     "tune": "doodlin",
+     "A": {
+      "audio": "media/clips/c011.mp3",
+      "video": "media/clips/c011.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c012.mp3",
+      "video": "media/clips/c012.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/doodlin.png"
+     }
+    },
+    {
+     "id": "p1b_03",
+     "tune": "lady_bird",
+     "A": {
+      "audio": "media/clips/c013.mp3",
+      "video": "media/clips/c013.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c014.mp3",
+      "video": "media/clips/c014.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/lady_bird.png"
+     }
+    },
+    {
+     "id": "p1b_04",
+     "tune": "doodlin",
+     "A": {
+      "audio": "media/clips/c015.mp3",
+      "video": "media/clips/c015.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c016.mp3",
+      "video": "media/clips/c016.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/doodlin.png"
+     }
+    }
+   ]
   },
   {
-   "id": "proto_003",
-   "tune": "lady_bird",
-   "A": {
-    "audio": "media/exp1/proto_003_A.mp3",
-    "video": "media/exp1/proto_003_A.mp4"
-   },
-   "B": {
-    "audio": "media/exp1/proto_003_B.mp3",
-    "video": "media/exp1/proto_003_B.mp4"
-   }
+   "id": "2",
+   "title": "Does the solo belong to this lead sheet?",
+   "layout": "single",
+   "choices": [
+    "Yes, played over this lead sheet",
+    "No, played over something else"
+   ],
+   "leadsheet": true,
+   "question": "Was this solo improvised over the lead sheet shown above?",
+   "intro_html": "<p>You see one <b>lead sheet</b> and hear one solo. Decide whether the solo was played over <b>these</b> chord changes and form, or over a different tune.</p>",
+   "items": [
+    {
+     "id": "p2_01",
+     "tune": "doodlin",
+     "clip": {
+      "audio": "media/clips/c017.mp3",
+      "video": "media/clips/c017.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/doodlin.png"
+     }
+    },
+    {
+     "id": "p2_02",
+     "tune": "lady_bird",
+     "clip": {
+      "audio": "media/clips/c018.mp3",
+      "video": "media/clips/c018.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/lady_bird.png"
+     }
+    },
+    {
+     "id": "p2_03",
+     "tune": "doodlin",
+     "clip": {
+      "audio": "media/clips/c019.mp3",
+      "video": "media/clips/c019.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/lady_bird.png"
+     }
+    },
+    {
+     "id": "p2_04",
+     "tune": "lady_bird",
+     "clip": {
+      "audio": "media/clips/c020.mp3",
+      "video": "media/clips/c020.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/doodlin.png"
+     }
+    },
+    {
+     "id": "p2_05",
+     "tune": "doodlin",
+     "clip": {
+      "audio": "media/clips/c021.mp3",
+      "video": "media/clips/c021.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/doodlin.png"
+     }
+    },
+    {
+     "id": "p2_06",
+     "tune": "lady_bird",
+     "clip": {
+      "audio": "media/clips/c022.mp3",
+      "video": "media/clips/c022.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/lady_bird.png"
+     }
+    },
+    {
+     "id": "p2_07",
+     "tune": "doodlin",
+     "clip": {
+      "audio": "media/clips/c023.mp3",
+      "video": "media/clips/c023.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/lady_bird.png"
+     }
+    },
+    {
+     "id": "p2_08",
+     "tune": "lady_bird",
+     "clip": {
+      "audio": "media/clips/c024.mp3",
+      "video": "media/clips/c024.mp4"
+     },
+     "leadsheet": {
+      "image": "media/leadsheets/doodlin.png"
+     }
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Same musician?",
+   "layout": "pair",
+   "choices": [
+    "Same musician",
+    "Different musicians"
+   ],
+   "leadsheet": false,
+   "question": "Are these two solos played by the same musician?",
+   "intro_html": "<p>You hear two solo excerpts. Decide whether they were played by the <b>same musician</b> (same personal style, phrasing and vocabulary) or by two different musicians. Ignore the sound: everything is played back by the same synthesised instrument.</p>",
+   "items": [
+    {
+     "id": "p3_01",
+     "tune": "doodlin",
+     "A": {
+      "audio": "media/clips/c025.mp3",
+      "video": "media/clips/c025.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c026.mp3",
+      "video": "media/clips/c026.mp4"
+     }
+    },
+    {
+     "id": "p3_02",
+     "tune": "lady_bird",
+     "A": {
+      "audio": "media/clips/c027.mp3",
+      "video": "media/clips/c027.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c028.mp3",
+      "video": "media/clips/c028.mp4"
+     }
+    },
+    {
+     "id": "p3_03",
+     "tune": "doodlin",
+     "A": {
+      "audio": "media/clips/c029.mp3",
+      "video": "media/clips/c029.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c030.mp3",
+      "video": "media/clips/c030.mp4"
+     }
+    },
+    {
+     "id": "p3_04",
+     "tune": "lady_bird",
+     "A": {
+      "audio": "media/clips/c031.mp3",
+      "video": "media/clips/c031.mp4"
+     },
+     "B": {
+      "audio": "media/clips/c032.mp3",
+      "video": "media/clips/c032.mp4"
+     }
+    }
+   ]
   }
- ],
- "sessions": {
-  "s1": [
-   "proto_001",
-   "proto_002",
-   "proto_003"
-  ]
- },
- "default_session": "s1"
+ ]
 }

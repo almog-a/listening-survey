@@ -1,6 +1,13 @@
-/* Pairwise forced-choice listening study (NotaGen Part I, human arm).
- * Static page: jsPsych 8 from a CDN, items from manifest.json, responses POSTed to an Apps Script collector.
+/* Multi-part listening study (NotaGen Part I, human arm).
+ * Static page: jsPsych 8 from a CDN, structure and items from manifest.json, responses POSTed to an Apps Script collector.
  * URL: index.html?r=<rater id>[&s=<session id>]
+ *
+ * manifest.parts[] = { id, title, intro_html, question, layout: "pair"|"single", choices: [labels],
+ *                      leadsheet: bool, items: [...] }
+ *   pair item:   { id, tune, A: {audio, video?}, B: {audio, video?}, leadsheet?: {image} }
+ *   single item: { id, tune, clip: {audio, video?}, leadsheet?: {image} }
+ * Pair items are shown as "Solo 1"/"Solo 2"; half of them per rater are shown swapped (recorded as slot1_side).
+ * When a part's choices are exactly ["Solo 1","Solo 2"] the response also records chosen_side (A/B).
  */
 (function () {
   "use strict";
@@ -10,7 +17,7 @@
   const t0 = Date.now();
 
   // ---------- small utilities ----------
-  function hash32(str) { // cyrb53-derived, 32-bit
+  function hash32(str) {
     let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
     for (let i = 0; i < str.length; i++) { const ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
     h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
@@ -39,7 +46,7 @@
   }
   function send(row) {
     row.rater = raterId; row.client_time = new Date().toISOString();
-    row.uid = raterId + ":" + row.kind + ":" + (row.item_id || row.session || "") + ":" + (row.trial_index === undefined ? "" : row.trial_index);
+    row.uid = raterId + ":" + row.kind + ":" + (row.item_id || row.session || "") + ":" + (row.part || "");
     queue.push(row); lsSet(queueKey, queue);
     flush();
   }
@@ -57,9 +64,7 @@
 
   // ---------- boot ----------
   const jsPsych = initJsPsych({ show_progress_bar: true, auto_update_progress_bar: false, message_progress_bar: "Progress" });
-
   function fatal(msg) { document.body.innerHTML = '<div class="jspsych-content" style="padding:40px"><p class="error">' + esc(msg) + '</p></div>'; }
-
   if (!raterId) { fatal("This link is missing a participant id (...?r=ID). Please use the exact link you were sent."); return; }
 
   fetch(CFG.manifestUrl, { cache: "no-store" })
@@ -68,120 +73,120 @@
     .catch(function (e) { fatal("Could not load the study: " + e.message); });
 
   function run(M) {
-    const sessionId = params.get("s") || M.default_session || Object.keys(M.sessions)[0];
-    const ids = M.sessions[sessionId];
-    if (!ids) { fatal("Unknown session '" + sessionId + "'."); return; }
-    const byId = {}; M.items.forEach(function (it) { byId[it.id] = it; });
+    const sessionId = params.get("s") || M.default_session || (M.sessions ? Object.keys(M.sessions)[0] : "all");
+    const allowed = M.sessions && M.sessions[sessionId] ? new Set(M.sessions[sessionId]) : null;
+    if (M.sessions && !allowed) { fatal("Unknown session '" + sessionId + "'."); return; }
     const rnd = mulberry32(hash32(M.experiment + "|" + sessionId + "|" + raterId));
     const doneKey = "ls_done_" + M.experiment + "_" + sessionId + "_" + raterId;
     const done = new Set(lsGet(doneKey, []));
 
-    // per-rater order and side flips, balanced within the rater
-    const order = shuffle(ids, rnd);
-    const flips = shuffle(order.map(function (_, i) { return i < Math.floor(order.length / 2); }), rnd);
-    const plan = order.map(function (id, i) { return { item: byId[id], flipped: flips[i], pos: i }; });
-    const remaining = plan.filter(function (p) { return !done.has(p.item.id); });
-    const nTotal = plan.length;
+    // per-rater plan: parts in manifest order, items shuffled within a part, pair sides flipped for half of them
+    const plan = [];
+    M.parts.forEach(function (part) {
+      const items = part.items.filter(function (it) { return !allowed || allowed.has(it.id); });
+      const order = shuffle(items, rnd);
+      const flips = shuffle(order.map(function (_, i) { return i < Math.floor(order.length / 2); }), rnd);
+      plan.push({ part: part, trials: order.map(function (it, i) { return { item: it, flipped: part.layout === "pair" && flips[i] }; }) });
+    });
+    const nTotal = plan.reduce(function (n, p) { return n + p.trials.length; }, 0);
+    const nRemaining = plan.reduce(function (n, p) { return n + p.trials.filter(function (t) { return !done.has(t.item.id); }).length; }, 0);
 
-    const mediaFiles = { audio: [], video: [], images: [] };
-    plan.forEach(function (p) { ["A", "B"].forEach(function (side) {
-      const m = p.item[side];
-      if (m.video) mediaFiles.video.push(m.video); else if (m.audio) mediaFiles.audio.push(m.audio);
-      if (m.score && !m.video) mediaFiles.images.push(m.score);
+    const media = { audio: [], video: [], images: [] };
+    function addClip(m) { if (!m) return; if (m.video) media.video.push(m.video); else if (m.audio) media.audio.push(m.audio); if (m.score && !m.video) media.images.push(m.score); }
+    plan.forEach(function (p) { p.trials.forEach(function (t) {
+      addClip(t.item.A); addClip(t.item.B); addClip(t.item.clip);
+      if (t.item.leadsheet && t.item.leadsheet.image) media.images.push(t.item.leadsheet.image);
     }); });
-    if (M.sound_check && M.sound_check.audio) mediaFiles.audio.push(M.sound_check.audio);
+    if (M.sound_check && M.sound_check.audio) media.audio.push(M.sound_check.audio);
 
     const timeline = [];
+    let pos = 0;
 
-    // 1. consent
+    // consent
     timeline.push({
       type: jsPsychHtmlButtonResponse,
       stimulus: '<div class="consent">' + (M.consent_html || defaultConsent(M)) + '</div>',
       choices: ["I agree, start"],
-      on_finish: function () { send({ kind: "session_start", experiment: M.experiment, session: sessionId, manifest_version: M.built, n_items: nTotal, n_remaining: remaining.length, user_agent: navigator.userAgent, screen: screen.width + "x" + screen.height }); },
+      on_finish: function () { send({ kind: "session_start", experiment: M.experiment, session: sessionId, manifest_version: M.built, n_items: nTotal, n_remaining: nRemaining, user_agent: navigator.userAgent, screen: screen.width + "x" + screen.height }); },
     });
-
-    // 2. background questionnaire (skipped on resume)
-    if (remaining.length === nTotal) timeline.push({
+    // background questionnaire (skipped on resume)
+    if (nRemaining === nTotal) timeline.push({
       type: jsPsychSurveyHtmlForm,
       preamble: "<h2>About you</h2><p class='hint'>Two minutes. This is used only to describe the group of listeners.</p>",
       html: questionnaireHtml(),
       button_label: "Continue",
       on_finish: function (d) { send({ kind: "questionnaire", experiment: M.experiment, session: sessionId, answers: JSON.stringify(d.response) }); },
     });
-
-    // 3. preload
+    // preload
     timeline.push({
-      type: jsPsychPreload, audio: mediaFiles.audio, video: mediaFiles.video, images: mediaFiles.images,
+      type: jsPsychPreload, audio: media.audio, video: media.video, images: media.images,
       show_progress_bar: true, message: "<p>Loading the music (this can take a minute)...</p>", continue_after_error: true, max_load_time: 300000,
       on_finish: function (d) { const f = [].concat(d.failed_audio || [], d.failed_video || [], d.failed_images || []); if (f.length) send({ kind: "preload_error", experiment: M.experiment, session: sessionId, failed: f.join(" ") }); },
     });
-
-    // 4. sound check
     if (M.sound_check && M.sound_check.audio) timeline.push({
       type: jsPsychHtmlButtonResponse,
       stimulus: '<div class="instructions"><h2>Sound check</h2><p>Please use headphones or good speakers in a quiet room. Play this clip and set a comfortable volume; keep it there for the whole study.</p><audio controls src="' + esc(M.sound_check.audio) + '"></audio></div>',
       choices: ["The sound is fine"],
     });
-
-    // 5. instructions
-    timeline.push({
-      type: jsPsychInstructions, pages: ['<div class="instructions">' + (M.instructions_html || "") + '</div>'],
+    if (M.instructions_html) timeline.push({
+      type: jsPsychInstructions, pages: ['<div class="instructions">' + M.instructions_html + '</div>'],
       show_clickable_nav: true, button_label_next: "Begin", allow_backward: false,
     });
 
-    // 6. trials
-    remaining.forEach(function (p, k) {
-      const it = p.item;
-      const slots = p.flipped ? ["B", "A"] : ["A", "B"]; // slot 0 = "Solo 1"
-      const trialData = {};
-      function finishItem() {
-        send(trialData.row);
-        done.add(it.id); lsSet(doneKey, Array.from(done));
-        jsPsych.progressBar.progress = done.size / nTotal;
-      }
+    // parts
+    plan.forEach(function (p, pi) {
+      const part = p.part;
+      const remaining = p.trials.filter(function (t) { return !done.has(t.item.id); });
+      if (!remaining.length) { pos += p.trials.length; return; }
       timeline.push({
-        type: jsPsychHtmlButtonResponse,
-        stimulus: pairHtml(it, slots, M, p.pos, nTotal),
-        choices: ["Solo 1", "Solo 2"],
-        prompt: '<p class="hint">' + (CFG.requireFullListen ? "Listen to both solos to the end, then choose. You may replay them." : "You may replay the solos.") + '</p>',
-        on_load: function () {
-          const media = Array.prototype.slice.call(document.querySelectorAll(".clip video, .clip audio"));
-          const btns = Array.prototype.slice.call(document.querySelectorAll("#jspsych-html-button-response-btngroup button"));
-          const ended = [false, false], plays = [0, 0], events = [];
-          const tStart = performance.now();
-          function ev(name, i, el) { events.push([Math.round(performance.now() - tStart), name, i, +el.currentTime.toFixed(2)]); }
-          if (CFG.requireFullListen) btns.forEach(function (b) { b.disabled = true; });
-          media.forEach(function (el, i) {
-            el.addEventListener("play", function () { plays[i]++; ev("play", i, el); media.forEach(function (o, j) { if (j !== i && !o.paused) o.pause(); }); });
-            el.addEventListener("pause", function () { ev("pause", i, el); });
-            el.addEventListener("seeked", function () { ev("seek", i, el); });
-            el.addEventListener("ended", function () {
-              ended[i] = true; const c = el.closest(".clip"); c.classList.add("done"); c.querySelector(".status").textContent = "heard to the end";
-              ev("ended", i, el);
-              if (ended[0] && ended[1]) btns.forEach(function (b) { b.disabled = false; });
-            });
-          });
-          trialData.getStats = function () { return { plays: plays.slice(), events: events, listened_both: ended[0] && ended[1] }; };
-        },
-        on_finish: function (d) {
-          const st = trialData.getStats ? trialData.getStats() : {};
-          d.item_id = it.id; d.chosen_slot = d.response; d.chosen_side = slots[d.response]; d.flipped = p.flipped;
-          trialData.row = { kind: "trial", experiment: M.experiment, session: sessionId, item_id: it.id, tune: it.tune || "", trial_index: p.pos, presented_index: k,
-            chosen_slot: d.response + 1, chosen_side: d.chosen_side, slot1_side: slots[0], slot2_side: slots[1], rt_ms: Math.round(d.rt),
-            plays_slot1: st.plays ? st.plays[0] : null, plays_slot2: st.plays ? st.plays[1] : null, listened_both: !!st.listened_both, events: JSON.stringify(st.events || []) };
-          if (!CFG.askConfidence) finishItem();
-        },
+        type: jsPsychInstructions,
+        pages: ['<div class="instructions"><p class="hint">Part ' + (pi + 1) + ' of ' + plan.length + '</p><h2>' + esc(part.title) + '</h2>' + (part.intro_html || "") + '<p class="hint">' + remaining.length + ' questions.</p></div>'],
+        show_clickable_nav: true, button_label_next: "Start part", allow_backward: false,
       });
-      if (CFG.askConfidence) timeline.push({
-        type: jsPsychHtmlButtonResponse,
-        stimulus: '<p class="question">How sure are you?</p>',
-        choices: ["Just a guess", "Fairly sure", "Very sure"],
-        on_finish: function (d) { trialData.row.confidence = d.response + 1; trialData.row.confidence_rt_ms = Math.round(d.rt); d.item_id = it.id; d.confidence = d.response + 1; finishItem(); },
+      remaining.forEach(function (t) {
+        const it = t.item;
+        const slots = t.flipped ? ["B", "A"] : ["A", "B"];
+        const myPos = pos++;
+        const isSideChoice = part.layout === "pair" && part.choices.length === 2 && /^solo 1$/i.test(part.choices[0]);
+        timeline.push({
+          type: jsPsychHtmlButtonResponse,
+          stimulus: trialHtml(part, it, slots, myPos, nTotal),
+          choices: part.choices,
+          prompt: '<p class="hint">' + (CFG.requireFullListen ? "Listen to the music to the end, then answer." : "You may replay the music as often as you like.") + '</p>',
+          on_load: function () {
+            const els = Array.prototype.slice.call(document.querySelectorAll(".clip video, .clip audio"));
+            const btns = Array.prototype.slice.call(document.querySelectorAll("#jspsych-html-button-response-btngroup button"));
+            const ended = els.map(function () { return false; }), plays = els.map(function () { return 0; }), events = [];
+            const tStart = performance.now();
+            function ev(name, i, el) { events.push([Math.round(performance.now() - tStart), name, i, +el.currentTime.toFixed(2)]); }
+            if (CFG.requireFullListen) btns.forEach(function (b) { b.disabled = true; });
+            els.forEach(function (el, i) {
+              el.addEventListener("play", function () { plays[i]++; ev("play", i, el); els.forEach(function (o, j) { if (j !== i && !o.paused) o.pause(); }); });
+              el.addEventListener("pause", function () { ev("pause", i, el); });
+              el.addEventListener("seeked", function () { ev("seek", i, el); });
+              el.addEventListener("ended", function () {
+                ended[i] = true; ev("ended", i, el);
+                if (ended.every(Boolean)) btns.forEach(function (b) { b.disabled = false; });
+              });
+            });
+            window.__trialStats = function () { return { plays: plays.slice(), events: events, listened_all: ended.every(Boolean) }; };
+          },
+          on_finish: function (d) {
+            const st = window.__trialStats ? window.__trialStats() : {};
+            d.item_id = it.id; d.part = part.id; d.choice_label = part.choices[d.response];
+            const row = { kind: "trial", experiment: M.experiment, session: sessionId, part: part.id, item_id: it.id, tune: it.tune || "", layout: part.layout,
+              trial_index: myPos, choice_index: d.response, choice_label: d.choice_label, rt_ms: Math.round(d.rt),
+              plays: JSON.stringify(st.plays || []), listened_all: !!st.listened_all, events: JSON.stringify(st.events || []) };
+            if (part.layout === "pair") { row.slot1_side = slots[0]; row.slot2_side = slots[1]; row.chosen_side = isSideChoice ? slots[d.response] : ""; }
+            send(row);
+            done.add(it.id); lsSet(doneKey, Array.from(done));
+            jsPsych.progressBar.progress = done.size / nTotal;
+          },
+        });
       });
     });
 
-    // 7. end
+    // end
     timeline.push({
       type: jsPsychCallFunction, async: true,
       func: async function (cb) {
@@ -214,16 +219,22 @@
   }
 
   // ---------- HTML pieces ----------
-  function pairHtml(it, slots, M, pos, nTotal) {
-    function clip(label, m) {
-      let player;
-      if (m.video) player = '<video controls preload="auto" playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture src="' + esc(m.video) + '"></video>';
-      else player = (m.score ? '<img src="' + esc(m.score) + '" alt="score">' : "") + '<audio controls preload="auto" controlsList="nodownload noplaybackrate" src="' + esc(m.audio) + '"></audio>';
-      return '<div class="clip"><h3>' + label + '</h3>' + player + '<div class="status"></div></div>';
-    }
-    return '<div class="progress">Pair ' + (pos + 1) + ' of ' + nTotal + '</div>' +
-      '<p class="question">' + esc(M.question) + '</p>' +
-      '<div class="pair">' + clip("Solo 1", it[slots[0]]) + clip("Solo 2", it[slots[1]]) + '</div>';
+  function player(m) {
+    if (m.video) return '<video controls preload="auto" playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture src="' + esc(m.video) + '"></video>';
+    return (m.score ? '<img src="' + esc(m.score) + '" alt="score">' : "") + '<audio controls preload="auto" controlsList="nodownload noplaybackrate" src="' + esc(m.audio) + '"></audio>';
+  }
+  function clip(label, m) { return '<div class="clip"><h3>' + label + '</h3>' + player(m) + '<div class="status"></div></div>'; }
+  function leadsheetHtml(it) {
+    if (!it.leadsheet) return "";
+    return '<div class="leadsheet"><h3>Lead sheet</h3>' + (it.leadsheet.image ? '<img src="' + esc(it.leadsheet.image) + '" alt="lead sheet">' : "") +
+      (it.leadsheet.audio ? '<audio controls preload="auto" src="' + esc(it.leadsheet.audio) + '"></audio>' : "") + '</div>';
+  }
+  function trialHtml(part, it, slots, pos, nTotal) {
+    let body;
+    if (part.layout === "pair") body = '<div class="pair">' + clip("Solo 1", it[slots[0]]) + clip("Solo 2", it[slots[1]]) + '</div>';
+    else body = '<div class="pair single">' + clip("Solo", it.clip) + '</div>';
+    return '<div class="progress">' + (pos + 1) + ' of ' + nTotal + '</div>' + (part.leadsheet ? leadsheetHtml(it) : "") +
+      '<p class="question">' + esc(part.question) + '</p>' + body;
   }
 
   function questionnaireHtml() {
@@ -241,7 +252,7 @@
 
   function defaultConsent(M) {
     return '<h2>' + esc(M.title || "Jazz listening study") + '</h2>' +
-      '<p>You will hear pairs of short jazz solo excerpts (about 30 seconds each) played by the same synthesised instrument over a rhythm section. After each pair you answer one question by clicking a button. One session takes about 30-40 minutes. Answer by ear; there are no consequences for you either way.</p>' +
+      '<p>You will hear short jazz solo excerpts (about 30 seconds each) played by the same synthesised instrument over a rhythm section, and answer one question about each. The study has several short parts; each part explains its question. One session takes about 30-40 minutes. Answer by ear.</p>' +
       '<p>We record your answers, your response times and how you used the players. We do not record your name. Your participant id is the code in your link. You may stop at any time by closing the tab; if you reopen the same link, the study continues where you left off.</p>' +
       '<p>Questions: ' + esc(CFG.contact) + '.</p>';
   }
