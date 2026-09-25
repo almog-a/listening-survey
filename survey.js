@@ -228,7 +228,7 @@
 
   function questionnaireHtml() {
     function opt(name, opts, req) { return '<select name="' + name + '"' + (req ? " required" : "") + '><option value="">choose...</option>' + opts.map(function (o) { return '<option>' + esc(o) + '</option>'; }).join("") + '</select>'; }
-    return '<form class="qform" id="qf">' +
+    return '<div class="qform">' +
       '<label>How would you describe your relationship to jazz?</label>' + opt("jazz_role", ["Professional jazz musician", "Jazz student (conservatory / academy)", "Amateur jazz player", "Serious listener (I do not play)", "Casual listener"], true) +
       '<label>Main instrument (if you play)</label><input type="text" name="instrument" placeholder="e.g. tenor sax, piano, none">' +
       '<label>Years playing jazz</label><input type="number" name="years_playing" min="0" max="80" step="1" value="0">' +
@@ -236,7 +236,7 @@
       '<label>Formal training in jazz improvisation or jazz theory</label>' + opt("training", ["None", "Some lessons / self-taught", "Several years", "Degree-level"], true) +
       '<label>Age group</label>' + opt("age", ["18-24", "25-34", "35-44", "45-54", "55+"], false) +
       '<label>How are you listening?</label>' + opt("playback", ["Headphones", "External speakers", "Laptop / phone speakers"], true) +
-      '</form>';
+      '</div>';
   }
 
   function defaultConsent(M) {
