@@ -1,7 +1,7 @@
 {
  "study": "notagen_part1",
  "experiment": "template",
- "built": "2026-09-26T00:17:59",
+ "built": "2026-09-26T00:45:49",
  "title": "Jazz listening study (template)",
  "instructions_html": "<h2>How it works</h2><p>The study has <b>4 short parts</b>. Each part starts with a page that explains its question. You may replay any clip as often as you like. There are no right or wrong consequences for you; answer by ear.</p>",
  "parts": [
@@ -81,7 +81,7 @@
       "audio": "media/clips/c010.mp3"
      },
      "leadsheet": {
-      "video": "media/leadsheets/lady_bird_leadsheet.mp4"
+      "video": "media/leadsheets/nearness_A1.mp4"
      }
     },
     {
