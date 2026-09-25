@@ -9,6 +9,8 @@ window.SURVEY_CONFIG = {
   requireFullListen: false,
   // Show a "Skip for now" button on the About-you page (pilot only; set false for the real study).
   questionnaireSkippable: true,
+  // Shuffle items within a part and swap pair sides for half of them, per rater. false = manifest order, A always Solo 1.
+  randomize: false,
   // Ask for a confidence rating after each choice.
   askConfidence: false,
   // Contact shown on the consent page.

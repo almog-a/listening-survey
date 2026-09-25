@@ -85,8 +85,8 @@
     const plan = [];
     M.parts.forEach(function (part) {
       const items = part.items.filter(function (it) { return !allowed || allowed.has(it.id); });
-      const order = shuffle(items, rnd);
-      const flips = shuffle(order.map(function (_, i) { return i < Math.floor(order.length / 2); }), rnd);
+      const order = CFG.randomize ? shuffle(items, rnd) : items;
+      const flips = CFG.randomize ? shuffle(order.map(function (_, i) { return i < Math.floor(order.length / 2); }), rnd) : order.map(function () { return false; });
       plan.push({ part: part, trials: order.map(function (it, i) { return { item: it, flipped: part.layout === "pair" && flips[i] }; }) });
     });
     const nTotal = plan.reduce(function (n, p) { return n + p.trials.length; }, 0);
