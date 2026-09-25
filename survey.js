@@ -96,7 +96,7 @@
     function addClip(m) { if (!m) return; if (m.video) media.video.push(m.video); else if (m.audio) media.audio.push(m.audio); if (m.score && !m.video) media.images.push(m.score); }
     plan.forEach(function (p) { p.trials.forEach(function (t) {
       addClip(t.item.A); addClip(t.item.B); addClip(t.item.clip);
-      if (t.item.leadsheet && t.item.leadsheet.image) media.images.push(t.item.leadsheet.image);
+      if (t.item.leadsheet) { const ls = t.item.leadsheet; if (ls.video) media.video.push(ls.video); else { if (ls.image) media.images.push(ls.image); if (ls.audio) media.audio.push(ls.audio); } }
     }); });
     if (M.sound_check && M.sound_check.audio) media.audio.push(M.sound_check.audio);
 
@@ -230,7 +230,7 @@
       root.innerHTML = html;
       shownAt = performance.now();
       // media bookkeeping
-      const els = Array.prototype.slice.call(root.querySelectorAll(".clip video, .clip audio"));
+      const els = Array.prototype.slice.call(root.querySelectorAll(".leadsheet video, .leadsheet audio, .clip video, .clip audio"));
       const ended = els.map(function () { return false; }), plays = els.map(function () { return 0; }), events = [];
       function ev(name, i, el) { events.push([Math.round(performance.now() - shownAt), name, i, +el.currentTime.toFixed(2)]); }
       els.forEach(function (el, i) {
@@ -258,8 +258,11 @@
   function clip(label, m) { return '<div class="clip"><h3>' + label + '</h3>' + player(m) + '<div class="status"></div></div>'; }
   function leadsheetHtml(it) {
     if (!it.leadsheet) return "";
-    return '<div class="leadsheet"><h3>Lead sheet</h3>' + (it.leadsheet.image ? '<img src="' + esc(it.leadsheet.image) + '" alt="lead sheet">' : "") +
-      (it.leadsheet.audio ? '<audio controls preload="auto" src="' + esc(it.leadsheet.audio) + '"></audio>' : "") + '</div>';
+    const ls = it.leadsheet;
+    return '<div class="leadsheet"><h3>Lead sheet</h3>' +
+      (ls.video ? '<video controls preload="auto" playsinline controlsList="nodownload noplaybackrate" disablePictureInPicture src="' + esc(ls.video) + '"></video>' : "") +
+      (ls.image && !ls.video ? '<img src="' + esc(ls.image) + '" alt="lead sheet">' : "") +
+      (ls.audio && !ls.video ? '<audio controls preload="auto" src="' + esc(ls.audio) + '"></audio>' : "") + '</div>';
   }
   function trialHtml(part, it, slots, pos, nTotal) {
     let body;
