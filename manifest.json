@@ -1,7 +1,7 @@
 {
  "study": "notagen_part1",
  "experiment": "template",
- "built": "2026-09-26T00:45:49",
+ "built": "2026-09-28T16:21:25",
  "title": "Jazz listening study (template)",
  "instructions_html": "<h2>How it works</h2><p>The study has <b>4 short parts</b>. Each part starts with a page that explains its question. You may replay any clip as often as you like. There are no right or wrong consequences for you; answer by ear.</p>",
  "parts": [
@@ -19,42 +19,42 @@
    "items": [
     {
      "id": "p1a_01",
-     "tune": "doodlin",
+     "tune": "infant_eyes",
      "A": {
-      "audio": "media/clips/c001.mp3"
+      "audio": "media/part1/p1a_01_A.mp3"
      },
      "B": {
-      "audio": "media/clips/c002.mp3"
+      "audio": "media/part1/p1a_01_B.mp3"
      }
     },
     {
      "id": "p1a_02",
-     "tune": "lady_bird",
+     "tune": "just_friends",
      "A": {
-      "audio": "media/clips/c003.mp3"
+      "audio": "media/part1/p1a_02_A.mp3"
      },
      "B": {
-      "audio": "media/clips/c004.mp3"
+      "audio": "media/part1/p1a_02_B.mp3"
      }
     },
     {
      "id": "p1a_03",
-     "tune": "doodlin",
+     "tune": "let_s_get_lost",
      "A": {
-      "audio": "media/clips/c005.mp3"
+      "audio": "media/part1/p1a_03_A.mp3"
      },
      "B": {
-      "audio": "media/clips/c006.mp3"
+      "audio": "media/part1/p1a_03_B.mp3"
      }
     },
     {
      "id": "p1a_04",
-     "tune": "lady_bird",
+     "tune": "my_ideal",
      "A": {
-      "audio": "media/clips/c007.mp3"
+      "audio": "media/part1/p1a_04_A.mp3"
      },
      "B": {
-      "audio": "media/clips/c008.mp3"
+      "audio": "media/part1/p1a_04_B.mp3"
      }
     }
    ]
@@ -75,10 +75,10 @@
      "id": "p1b_01",
      "tune": "lady_bird",
      "A": {
-      "audio": "media/clips/c009.mp3"
+      "audio": "media/clips/c001.mp3"
      },
      "B": {
-      "audio": "media/clips/c010.mp3"
+      "audio": "media/clips/c002.mp3"
      },
      "leadsheet": {
       "video": "media/leadsheets/nearness_A1.mp4"
@@ -88,10 +88,10 @@
      "id": "p1b_02",
      "tune": "doodlin",
      "A": {
-      "audio": "media/clips/c011.mp3"
+      "audio": "media/clips/c003.mp3"
      },
      "B": {
-      "audio": "media/clips/c012.mp3"
+      "audio": "media/clips/c004.mp3"
      },
      "leadsheet": {
       "video": "media/leadsheets/doodlin_leadsheet.mp4"
@@ -101,10 +101,10 @@
      "id": "p1b_03",
      "tune": "lady_bird",
      "A": {
-      "audio": "media/clips/c013.mp3"
+      "audio": "media/clips/c005.mp3"
      },
      "B": {
-      "audio": "media/clips/c014.mp3"
+      "audio": "media/clips/c006.mp3"
      },
      "leadsheet": {
       "video": "media/leadsheets/lady_bird_leadsheet.mp4"
@@ -114,10 +114,10 @@
      "id": "p1b_04",
      "tune": "doodlin",
      "A": {
-      "audio": "media/clips/c015.mp3"
+      "audio": "media/clips/c007.mp3"
      },
      "B": {
-      "audio": "media/clips/c016.mp3"
+      "audio": "media/clips/c008.mp3"
      },
      "leadsheet": {
       "video": "media/leadsheets/doodlin_leadsheet.mp4"
@@ -141,8 +141,8 @@
      "id": "p2_01",
      "tune": "doodlin",
      "clip": {
-      "audio": "media/clips/c017.mp3",
-      "video": "media/clips/c017.mp4"
+      "audio": "media/clips/c009.mp3",
+      "video": "media/clips/c009.mp4"
      },
      "leadsheet": {
       "image": "media/leadsheets/doodlin.png"
@@ -152,8 +152,8 @@
      "id": "p2_02",
      "tune": "lady_bird",
      "clip": {
-      "audio": "media/clips/c018.mp3",
-      "video": "media/clips/c018.mp4"
+      "audio": "media/clips/c010.mp3",
+      "video": "media/clips/c010.mp4"
      },
      "leadsheet": {
       "image": "media/leadsheets/lady_bird.png"
@@ -163,8 +163,8 @@
      "id": "p2_03",
      "tune": "doodlin",
      "clip": {
-      "audio": "media/clips/c019.mp3",
-      "video": "media/clips/c019.mp4"
+      "audio": "media/clips/c011.mp3",
+      "video": "media/clips/c011.mp4"
      },
      "leadsheet": {
       "image": "media/leadsheets/lady_bird.png"
@@ -174,8 +174,8 @@
      "id": "p2_04",
      "tune": "lady_bird",
      "clip": {
-      "audio": "media/clips/c020.mp3",
-      "video": "media/clips/c020.mp4"
+      "audio": "media/clips/c012.mp3",
+      "video": "media/clips/c012.mp4"
      },
      "leadsheet": {
       "image": "media/leadsheets/doodlin.png"
@@ -185,8 +185,8 @@
      "id": "p2_05",
      "tune": "doodlin",
      "clip": {
-      "audio": "media/clips/c021.mp3",
-      "video": "media/clips/c021.mp4"
+      "audio": "media/clips/c013.mp3",
+      "video": "media/clips/c013.mp4"
      },
      "leadsheet": {
       "image": "media/leadsheets/doodlin.png"
@@ -196,8 +196,8 @@
      "id": "p2_06",
      "tune": "lady_bird",
      "clip": {
-      "audio": "media/clips/c022.mp3",
-      "video": "media/clips/c022.mp4"
+      "audio": "media/clips/c014.mp3",
+      "video": "media/clips/c014.mp4"
      },
      "leadsheet": {
       "image": "media/leadsheets/lady_bird.png"
@@ -207,8 +207,8 @@
      "id": "p2_07",
      "tune": "doodlin",
      "clip": {
-      "audio": "media/clips/c023.mp3",
-      "video": "media/clips/c023.mp4"
+      "audio": "media/clips/c015.mp3",
+      "video": "media/clips/c015.mp4"
      },
      "leadsheet": {
       "image": "media/leadsheets/lady_bird.png"
@@ -218,8 +218,8 @@
      "id": "p2_08",
      "tune": "lady_bird",
      "clip": {
-      "audio": "media/clips/c024.mp3",
-      "video": "media/clips/c024.mp4"
+      "audio": "media/clips/c016.mp3",
+      "video": "media/clips/c016.mp4"
      },
      "leadsheet": {
       "image": "media/leadsheets/doodlin.png"
@@ -243,48 +243,48 @@
      "id": "p3_01",
      "tune": "doodlin",
      "A": {
-      "audio": "media/clips/c025.mp3",
-      "video": "media/clips/c025.mp4"
+      "audio": "media/clips/c017.mp3",
+      "video": "media/clips/c017.mp4"
      },
      "B": {
-      "audio": "media/clips/c026.mp3",
-      "video": "media/clips/c026.mp4"
+      "audio": "media/clips/c018.mp3",
+      "video": "media/clips/c018.mp4"
      }
     },
     {
      "id": "p3_02",
      "tune": "lady_bird",
      "A": {
-      "audio": "media/clips/c027.mp3",
-      "video": "media/clips/c027.mp4"
+      "audio": "media/clips/c019.mp3",
+      "video": "media/clips/c019.mp4"
      },
      "B": {
-      "audio": "media/clips/c028.mp3",
-      "video": "media/clips/c028.mp4"
+      "audio": "media/clips/c020.mp3",
+      "video": "media/clips/c020.mp4"
      }
     },
     {
      "id": "p3_03",
      "tune": "doodlin",
      "A": {
-      "audio": "media/clips/c029.mp3",
-      "video": "media/clips/c029.mp4"
+      "audio": "media/clips/c021.mp3",
+      "video": "media/clips/c021.mp4"
      },
      "B": {
-      "audio": "media/clips/c030.mp3",
-      "video": "media/clips/c030.mp4"
+      "audio": "media/clips/c022.mp3",
+      "video": "media/clips/c022.mp4"
      }
     },
     {
      "id": "p3_04",
      "tune": "lady_bird",
      "A": {
-      "audio": "media/clips/c031.mp3",
-      "video": "media/clips/c031.mp4"
+      "audio": "media/clips/c023.mp3",
+      "video": "media/clips/c023.mp4"
      },
      "B": {
-      "audio": "media/clips/c032.mp3",
-      "video": "media/clips/c032.mp4"
+      "audio": "media/clips/c024.mp3",
+      "video": "media/clips/c024.mp4"
      }
     }
    ]
