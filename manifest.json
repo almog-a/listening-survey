@@ -1,7 +1,7 @@
 {
  "study": "notagen_part1",
  "experiment": "template",
- "built": "2026-09-28T18:46:08",
+ "built": "2026-09-29T13:33:49",
  "title": "Jazz listening study (template)",
  "instructions_html": "<h2>How it works</h2><p>The study has <b>4 short parts</b>. Each part starts with a page that explains its question. You may replay any clip as often as you like. There are no right or wrong consequences for you; answer by ear.</p>",
  "parts": [
@@ -134,95 +134,87 @@
     "No, played over something else"
    ],
    "leadsheet": true,
-   "question": "Was this solo improvised over the lead sheet shown above?",
-   "intro_html": "<p>You see one <b>lead sheet</b> and hear one solo. Decide whether the solo was played over <b>these</b> chord changes and form, or over a different tune.</p>",
+   "question": "Was this solo improvised over the lead sheet above?",
+   "intro_html": "<p>You get one <b>lead sheet</b> (melody and chord changes, as a video with the band) and one <b>solo</b>, played alone without the band. Decide whether the solo was improvised over <b>these</b> chord changes, or over a different tune.</p>",
    "items": [
     {
      "id": "p2_01",
-     "tune": "doodlin",
+     "tune": "infant_eyes",
      "clip": {
-      "audio": "media/clips/c001.mp3",
-      "video": "media/clips/c001.mp4"
+      "audio": "media/part2/p2_01_solo.mp3"
      },
      "leadsheet": {
-      "image": "media/leadsheets/doodlin.png"
+      "video": "media/part2/p2_01_leadsheet.mp4"
      }
     },
     {
      "id": "p2_02",
-     "tune": "lady_bird",
+     "tune": "just_friends",
      "clip": {
-      "audio": "media/clips/c002.mp3",
-      "video": "media/clips/c002.mp4"
+      "audio": "media/part2/p2_02_solo.mp3"
      },
      "leadsheet": {
-      "image": "media/leadsheets/lady_bird.png"
+      "video": "media/part2/p2_02_leadsheet.mp4"
      }
     },
     {
      "id": "p2_03",
-     "tune": "doodlin",
+     "tune": "let_s_get_lost",
      "clip": {
-      "audio": "media/clips/c003.mp3",
-      "video": "media/clips/c003.mp4"
+      "audio": "media/part2/p2_03_solo.mp3"
      },
      "leadsheet": {
-      "image": "media/leadsheets/lady_bird.png"
+      "video": "media/part2/p2_03_leadsheet.mp4"
      }
     },
     {
      "id": "p2_04",
-     "tune": "lady_bird",
+     "tune": "my_ideal",
      "clip": {
-      "audio": "media/clips/c004.mp3",
-      "video": "media/clips/c004.mp4"
+      "audio": "media/part2/p2_04_solo.mp3"
      },
      "leadsheet": {
-      "image": "media/leadsheets/doodlin.png"
+      "video": "media/part2/p2_04_leadsheet.mp4"
      }
     },
     {
      "id": "p2_05",
-     "tune": "doodlin",
+     "tune": "sweet_lorraine",
      "clip": {
-      "audio": "media/clips/c005.mp3",
-      "video": "media/clips/c005.mp4"
+      "audio": "media/part2/p2_05_solo.mp3"
      },
      "leadsheet": {
-      "image": "media/leadsheets/doodlin.png"
+      "video": "media/part2/p2_05_leadsheet.mp4"
      }
     },
     {
      "id": "p2_06",
-     "tune": "lady_bird",
+     "tune": "tears_in_heaven",
      "clip": {
-      "audio": "media/clips/c006.mp3",
-      "video": "media/clips/c006.mp4"
+      "audio": "media/part2/p2_06_solo.mp3"
      },
      "leadsheet": {
-      "image": "media/leadsheets/lady_bird.png"
+      "video": "media/part2/p2_06_leadsheet.mp4"
      }
     },
     {
      "id": "p2_07",
-     "tune": "doodlin",
+     "tune": "the_nearness_of_you",
      "clip": {
-      "audio": "media/clips/c007.mp3",
-      "video": "media/clips/c007.mp4"
+      "audio": "media/part2/p2_07_solo.mp3"
      },
      "leadsheet": {
-      "image": "media/leadsheets/lady_bird.png"
+      "video": "media/part2/p2_07_leadsheet.mp4"
      }
     },
     {
      "id": "p2_08",
-     "tune": "lady_bird",
+     "tune": "there_will_never_be_another_you",
      "clip": {
-      "audio": "media/clips/c008.mp3",
-      "video": "media/clips/c008.mp4"
+      "audio": "media/part2/p2_08_solo.mp3"
      },
      "leadsheet": {
-      "image": "media/leadsheets/doodlin.png"
+      "video": "media/part2/p2_08_leadsheet.mp4"
      }
     }
    ]
@@ -243,48 +235,48 @@
      "id": "p3_01",
      "tune": "doodlin",
      "A": {
-      "audio": "media/clips/c009.mp3",
-      "video": "media/clips/c009.mp4"
+      "audio": "media/clips/c001.mp3",
+      "video": "media/clips/c001.mp4"
      },
      "B": {
-      "audio": "media/clips/c010.mp3",
-      "video": "media/clips/c010.mp4"
+      "audio": "media/clips/c002.mp3",
+      "video": "media/clips/c002.mp4"
      }
     },
     {
      "id": "p3_02",
      "tune": "lady_bird",
      "A": {
-      "audio": "media/clips/c011.mp3",
-      "video": "media/clips/c011.mp4"
+      "audio": "media/clips/c003.mp3",
+      "video": "media/clips/c003.mp4"
      },
      "B": {
-      "audio": "media/clips/c012.mp3",
-      "video": "media/clips/c012.mp4"
+      "audio": "media/clips/c004.mp3",
+      "video": "media/clips/c004.mp4"
      }
     },
     {
      "id": "p3_03",
      "tune": "doodlin",
      "A": {
-      "audio": "media/clips/c013.mp3",
-      "video": "media/clips/c013.mp4"
+      "audio": "media/clips/c005.mp3",
+      "video": "media/clips/c005.mp4"
      },
      "B": {
-      "audio": "media/clips/c014.mp3",
-      "video": "media/clips/c014.mp4"
+      "audio": "media/clips/c006.mp3",
+      "video": "media/clips/c006.mp4"
      }
     },
     {
      "id": "p3_04",
      "tune": "lady_bird",
      "A": {
-      "audio": "media/clips/c015.mp3",
-      "video": "media/clips/c015.mp4"
+      "audio": "media/clips/c007.mp3",
+      "video": "media/clips/c007.mp4"
      },
      "B": {
-      "audio": "media/clips/c016.mp3",
-      "video": "media/clips/c016.mp4"
+      "audio": "media/clips/c008.mp3",
+      "video": "media/clips/c008.mp4"
      }
     }
    ]
