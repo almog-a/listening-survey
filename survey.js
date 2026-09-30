@@ -110,23 +110,6 @@
       choices: ["I agree, start"],
       on_finish: function () { send({ kind: "session_start", experiment: M.experiment, session: sessionId, manifest_version: M.built, n_items: nTotal, n_remaining: nRemaining, user_agent: navigator.userAgent, screen: screen.width + "x" + screen.height }); },
     });
-    // background questionnaire (skipped on resume)
-    if (CFG.questionnaire !== false && nRemaining === nTotal) timeline.push({
-      type: jsPsychSurveyHtmlForm,
-      preamble: "<h2>About you</h2><p class='hint'>Two minutes. This is used only to describe the group of listeners.</p>",
-      html: questionnaireHtml(),
-      button_label: "Continue",
-      on_load: function () {
-        if (!CFG.questionnaireSkippable) return;
-        const next = document.querySelector("#jspsych-survey-html-form-next");
-        if (!next) return;
-        const skip = document.createElement("button");
-        skip.type = "button"; skip.className = "jspsych-btn"; skip.textContent = "Skip for now"; skip.style.marginLeft = "12px";
-        skip.addEventListener("click", function () { jsPsych.finishTrial({ response: { skipped: true }, rt: null }); });
-        next.parentNode.insertBefore(skip, next.nextSibling);
-      },
-      on_finish: function (d) { send({ kind: "questionnaire", experiment: M.experiment, session: sessionId, answers: JSON.stringify(d.response) }); },
-    });
     // preload
     timeline.push({
       type: jsPsychPreload, audio: media.audio, video: media.video, images: media.images,
@@ -270,19 +253,6 @@
     else body = '<div class="pair single">' + clip("Solo", it.clip) + '</div>';
     return '<div class="progress">' + (pos + 1) + ' of ' + nTotal + '</div>' + (part.leadsheet ? leadsheetHtml(it) : "") +
       '<p class="question">' + esc(part.question) + '</p>' + body;
-  }
-
-  function questionnaireHtml() {
-    function opt(name, opts, req) { return '<select name="' + name + '"' + (req ? " required" : "") + '><option value="">choose...</option>' + opts.map(function (o) { return '<option>' + esc(o) + '</option>'; }).join("") + '</select>'; }
-    return '<div class="qform">' +
-      '<label>How would you describe your relationship to jazz?</label>' + opt("jazz_role", ["Professional jazz musician", "Jazz student (conservatory / academy)", "Amateur jazz player", "Serious listener (I do not play)", "Casual listener"], true) +
-      '<label>Main instrument (if you play)</label><input type="text" name="instrument" placeholder="e.g. tenor sax, piano, none">' +
-      '<label>Years playing jazz</label><input type="number" name="years_playing" min="0" max="80" step="1" value="0">' +
-      '<label>Hours per week you listen to jazz</label>' + opt("listening_hours", ["Less than 1", "1-3", "3-10", "More than 10"], true) +
-      '<label>Formal training in jazz improvisation or jazz theory</label>' + opt("training", ["None", "Some lessons / self-taught", "Several years", "Degree-level"], true) +
-      '<label>Age group</label>' + opt("age", ["18-24", "25-34", "35-44", "45-54", "55+"], false) +
-      '<label>How are you listening?</label>' + opt("playback", ["Headphones", "External speakers", "Laptop / phone speakers"], true) +
-      '</div>';
   }
 
   function defaultConsent(M) {
