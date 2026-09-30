@@ -111,7 +111,7 @@
       on_finish: function () { send({ kind: "session_start", experiment: M.experiment, session: sessionId, manifest_version: M.built, n_items: nTotal, n_remaining: nRemaining, user_agent: navigator.userAgent, screen: screen.width + "x" + screen.height }); },
     });
     // background questionnaire (skipped on resume)
-    if (nRemaining === nTotal) timeline.push({
+    if (CFG.questionnaire !== false && nRemaining === nTotal) timeline.push({
       type: jsPsychSurveyHtmlForm,
       preamble: "<h2>About you</h2><p class='hint'>Two minutes. This is used only to describe the group of listeners.</p>",
       html: questionnaireHtml(),

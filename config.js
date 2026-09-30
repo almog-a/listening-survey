@@ -7,6 +7,8 @@ window.SURVEY_CONFIG = {
   manifestUrl: "manifest.json",
   // Require both excerpts to be played to the end before the choice buttons are enabled.
   requireFullListen: false,
+  // Show the About-you (background) page at all. false = go straight from consent to the music.
+  questionnaire: false,
   // Show a "Skip for now" button on the About-you page (pilot only; set false for the real study).
   questionnaireSkippable: true,
   // Shuffle items within a part and swap pair sides for half of them, per rater. false = manifest order, A always Solo 1.
